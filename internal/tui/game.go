@@ -324,35 +324,32 @@ func (p *gamePage) refreshGame(app *App) error {
 	return nil
 }
 
+func (p *gamePage) updatePlayer(t *tview.TextView, c googs.PlayerColor) bool {
+	// Use a blinking dot to indicate who is on turn
+	// TODO: online status
+	title := cond(p.game.WhoseTurn(p.gameState) == c,
+		fmt.Sprintf(" %s [::l]•[-] ", c),
+		fmt.Sprintf(" %s ", c))
+	clock := p.clock.ComputeClock(&p.game.TimeControl, c)
+	style := cond(clock.SuddenDeath, "[red]", "")
+	player := cond(c == googs.PlayerBlack, p.game.BlackPlayer(), p.game.WhitePlayer())
+	text := fmt.Sprintf("\n%s\n\n%s%s[-]", player, style, clock)
+
+	if title == t.GetTitle() && text == t.GetText(false) {
+		return false
+	}
+	t.SetTitle(title)
+	t.SetText(text)
+	return true
+}
+
 func (p *gamePage) updatePlayers() bool {
 	if p.game.Phase != googs.PlayPhase {
 		return false
 	}
-
-	// Use a blinking dot to indicate who is on turn
-	// TODO: online status
-	if p.game.WhoseTurn(p.gameState) == googs.PlayerBlack {
-		p.bPlayer.SetTitle(" Black [::l]•[-] ")
-		p.wPlayer.SetTitle(" White ")
-	} else {
-		p.wPlayer.SetTitle(" White [::l]•[-] ")
-		p.bPlayer.SetTitle(" Black ")
-	}
-
-	bClock := p.clock.ComputeClock(&p.game.TimeControl, googs.PlayerBlack)
-	wClock := p.clock.ComputeClock(&p.game.TimeControl, googs.PlayerWhite)
-	bStyle := cond(bClock.SuddenDeath, "[red]", "")
-	wStyle := cond(wClock.SuddenDeath, "[red]", "")
-	// FIXME: better use a struct, with last move (pass, resign, stone removal etc.)
-	bText := fmt.Sprintf("\n%s\n\n%s%s[-]", p.game.BlackPlayer(), bStyle, bClock)
-	wText := fmt.Sprintf("\n%s\n\n%s%s[-]", p.game.WhitePlayer(), wStyle, wClock)
-	if bText == p.bPlayer.GetText(false) && wText == p.wPlayer.GetText(false) {
-		return false
-	}
-	p.bPlayer.SetText(bText)
-	p.wPlayer.SetText(wText)
-
-	return true
+	b := p.updatePlayer(p.bPlayer, googs.PlayerBlack)
+	w := p.updatePlayer(p.wPlayer, googs.PlayerWhite)
+	return b && w
 }
 
 func (p *gamePage) updateStatusAndHint(app *App) {
