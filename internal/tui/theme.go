@@ -1,6 +1,8 @@
 package tui
 
 import (
+	"sort"
+
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -41,4 +43,42 @@ func init() {
 	Styles.TertiaryTextColor = solarizedBase00 // Tertiary text (e.g. subtitles, notes)
 	Styles.InverseTextColor = solarizedBase3
 	Styles.ContrastSecondaryTextColor = solarizedCyan // Secondary text on ContrastBackgroundColor-colored backgrounds
+}
+
+type BoardTheme struct {
+	GridFG      tcell.Color
+	BoardBG     tcell.Color
+	LastBlackBG tcell.Color
+	LastWhiteBG tcell.Color
+}
+
+var boardThemes = map[string]BoardTheme{
+	"night": {
+		GridFG:      tcell.NewHexColor(0x1f1f1f), // gray
+		BoardBG:     tcell.NewHexColor(0x666666), // dark gray
+		LastBlackBG: solarizedOrange,
+		LastWhiteBG: solarizedRed,
+	},
+	"oak": {
+		GridFG:      tcell.NewHexColor(0x1f1f1f), // gray
+		BoardBG:     tcell.NewHexColor(0x7c4c38), // reddish-brown
+		LastBlackBG: solarizedOrange,
+		LastWhiteBG: solarizedRed,
+	},
+}
+
+// Return the theme next to the current (sorted by key)
+func nextBoardTheme(current string) string {
+	var keys []string
+	for k := range boardThemes {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for i, k := range keys {
+		if k == current {
+			return keys[(i+1)%len(keys)]
+		}
+	}
+	return keys[0]
 }

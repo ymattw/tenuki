@@ -31,6 +31,7 @@ type gamePage struct {
 	gameID     int64            // Orignal input
 	game       *googs.Game      // Loaded game
 	gameState  *googs.GameState // Loaded game state
+	boardTheme string
 	cursor     *googs.OriginCoordinate
 	clock      *googs.Clock
 	ticker     *time.Ticker
@@ -58,6 +59,7 @@ func newGamePage(app *App, gameID int64, returnPage string) Page {
 		gameID:     gameID,
 		game:       &googs.Game{},      // Avoid nil deference
 		gameState:  &googs.GameState{}, // Avoid nil deference
+		boardTheme: "night",
 		cursor:     &googs.OriginCoordinate{},
 		ticker:     time.NewTicker(time.Second),
 	}
@@ -182,10 +184,11 @@ func (p *gamePage) resetLayout() {
 
 	bPlayerFlex := tview.NewFlex().
 		SetDirection(tview.FlexRow).
-		AddItem(p.bPlayer, 7, 1, false)
+		AddItem(p.bPlayer, 7, 0, false)
 	wPlayerFlex := tview.NewFlex().
 		SetDirection(tview.FlexRow).
-		AddItem(p.wPlayer, 7, 1, false)
+		AddItem(nil, 0, 1, false). // top spacer
+		AddItem(p.wPlayer, 7, 0, false)
 
 	// Align the elements in a 11x7 grid
 	p.grid.SetRows(
@@ -380,18 +383,18 @@ func (p *gamePage) updateStatusAndHint(app *App) {
 	case googs.PlayPhase:
 		p.status.SetText(p.game.Status(p.gameState, app.client.UserID))
 		p.hint.SetText(cond(p.gameState.IsMyTurn(app.client.UserID),
-			keyHints([]string{"←↓↑→hjkl move cursor", "CR play", "Pass", "Resign"}),
+			keyHints([]string{"←↓↑→hjkl move cursor", "CR play", "Pass", "Resign", "theme"}),
 			cond(isMyGame,
-				keyHints([]string{"Resign"}),
-				keyHints(nil))))
+				keyHints([]string{"Resign", "theme"}),
+				keyHints([]string{"theme"}))))
 	case googs.StoneRemovalPhase:
 		p.status.SetText(fmt.Sprintf("%s phase", p.game.Phase))
 		p.hint.SetText(cond(isMyGame,
-			keyHints([]string{"Accept"}),
-			keyHints(nil)))
+			keyHints([]string{"Accept", "theme"}),
+			keyHints([]string{"theme"})))
 	case googs.FinishedPhase:
 		p.status.SetText("[green]" + p.game.Result() + "[-]")
-		p.hint.SetText(keyHints(nil))
+		p.hint.SetText(keyHints([]string{"theme"}))
 	}
 }
 
@@ -498,6 +501,9 @@ func (p *gamePage) setupKeys(app *App) {
 				})
 				return nil
 			}
+		} else if event.Rune() == 't' {
+			p.boardTheme = nextBoardTheme(p.boardTheme)
+			return nil
 		}
 
 		return event

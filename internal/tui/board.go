@@ -15,11 +15,6 @@ const (
 	WhiteStone     = '⚪'
 	DeadBlackStone = '◾'
 	DeadWhiteStone = '◽'
-
-	GridFG      = 0x1f1f1f // grey
-	BoardBG     = 0x7c4c38 // reddish-brown
-	LastBlackBG = 0xa9a9a9 // dark grey
-	LastWhiteBG = 0xcc0000 // red
 )
 
 var (
@@ -50,19 +45,11 @@ const (
 	White
 )
 
-type PlayerColor int
-
-const (
-	PlayerUnknown PlayerColor = iota
-	PlayerBlack
-	PlayerWhite
-)
-
 type Cell struct {
-	Stone      Stone
-	IsLastMove bool
-	IsHoshi    bool
-	IsRemoval  bool
+	stone      Stone
+	isLastMove bool
+	isHoshi    bool
+	isRemoval  bool
 }
 
 func newCell(g *googs.GameState, row, col int) Cell {
@@ -74,41 +61,41 @@ func newCell(g *googs.GameState, row, col int) Cell {
 		}
 	}
 	return Cell{
-		Stone:      Stone(g.Board[row][col]),
-		IsLastMove: g.LastMove.X == col && g.LastMove.Y == row,
-		IsHoshi:    isHoshi,
-		IsRemoval:  g.Removal[row][col] == 1,
+		stone:      Stone(g.Board[row][col]),
+		isLastMove: g.LastMove.X == col && g.LastMove.Y == row,
+		isHoshi:    isHoshi,
+		isRemoval:  g.Removal[row][col] == 1,
 	}
 }
 
 func (c Cell) content() rune {
-	if c.Stone == Empty && c.IsHoshi {
+	if c.stone == Empty && c.isHoshi {
 		return HoshiChar
 	}
-	if c.Stone == Black && c.IsRemoval {
+	if c.stone == Black && c.isRemoval {
 		return DeadBlackStone
 	}
-	if c.Stone == White && c.IsRemoval {
+	if c.stone == White && c.isRemoval {
 		return DeadWhiteStone
 	}
 	return map[Stone]rune{
 		Empty: GridChar,
 		Black: BlackStone,
 		White: WhiteStone,
-	}[c.Stone]
+	}[c.stone]
 }
 
-func (c Cell) foreground() tcell.Color {
-	return tcell.NewHexColor(GridFG)
+func (c Cell) foreground(theme string) tcell.Color {
+	return boardThemes[theme].GridFG
 }
 
-func (c Cell) background() tcell.Color {
-	bg := BoardBG
+func (c Cell) background(theme string) tcell.Color {
+	bg := boardThemes[theme].BoardBG
 
-	if c.IsLastMove && c.Stone == Black && !c.IsRemoval {
-		bg = LastBlackBG
-	} else if c.IsLastMove && c.Stone == White && !c.IsRemoval {
-		bg = LastWhiteBG
+	if c.isLastMove && c.stone == Black && !c.isRemoval {
+		bg = boardThemes[theme].LastBlackBG
+	} else if c.isLastMove && c.stone == White && !c.isRemoval {
+		bg = boardThemes[theme].LastWhiteBG
 	}
 	return tcell.NewHexColor(int32(bg))
 }
@@ -155,8 +142,8 @@ func (p *gamePage) drawBoard(screen tcell.Screen, x, y int) (int, int, int, int)
 		for col := 0; col < size; col++ {
 			cell := newCell(p.gameState, row, col)
 			style := StyleDefault.
-				Foreground(cell.foreground()).
-				Background(cell.background())
+				Foreground(cell.foreground(p.boardTheme)).
+				Background(cell.background(p.boardTheme))
 			// Cursor use current shape in cell with reversed fg
 			if col == p.cursor.X && row == p.cursor.Y {
 				color := cond(whoseTurn == googs.PlayerBlack, tcell.ColorBlack, tcell.ColorWhite)
