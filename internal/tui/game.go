@@ -196,28 +196,47 @@ func (p *gamePage) resetLayout() {
 		AddItem(p.wPlayer, 7, 1, false)
 
 	// Align the elements in a 11x7 grid
-	p.grid.SetRows(1 /*navbar*/, 1 /*gap*/, 1, 1 /*gap*/, p.game.BoardSize()+2, 1 /*gap*/, 1 /*gap*/, 1, 1 /*hint*/, -4 /*chat*/, 1 /*message*/, -1)
-	p.grid.SetColumns(-1, 20, 1 /*gap*/, 3+p.game.BoardSize()*2+3, 1 /*gap*/, 20, -1)
+	p.grid.SetRows(
+		1,                    // navbar
+		-1,                   // spacer
+		1,                    // title
+		-1,                   // spacer
+		p.game.BoardSize()+2, // board with labels
+		-1,                   // spacer
+		1,                    // status
+		1,                    // hint
+		-3,                   // chat
+		1,                    // message
+		-1,                   // spacer
+	)
+	p.grid.SetColumns(
+		-1,                       // spacer
+		18,                       // black player
+		1,                        // gap
+		3+p.game.BoardSize()*2+3, // board with labels
+		1,                        // gap
+		18,                       // white player
+		-1,                       // spacer
+	)
 	// Row 0: navbar, span 7 columns
 	p.grid.AddItem(navbar, 0, 0, 1, 7, 1, 0, false)
-	// Row 1: gap
+	// Row 1: spacer
 	// Row 2: spacer, title (span 5 columns), spacer
 	p.grid.AddItem(p.title, 2, 1, 1, 5, 1, 0, false)
-	// Row 3: gap
+	// Row 3: spacer
 	// Row 4: spacer, bPlayer, gap, board, gap, wPlayer, spacer
 	p.grid.AddItem(bPlayerFlex, 4, 1, 1, 1, 5 /*minWidth*/, 0, false)
 	p.grid.AddItem(p.board, 4, 3, 1, 1, 0, 0, true)
 	p.grid.AddItem(wPlayerFlex, 4, 5, 1, 1, 5 /*minWidth*/, 0, false)
-	// Row 5: gap
+	// Row 5: spacer
 	// Row 6: spacer, status (5 columns), spacer
 	p.grid.AddItem(p.status, 6, 1, 1, 5, 1, 0, false)
 	// Row 7: spacer, hint (5 columns), spacer
 	p.grid.AddItem(p.hint, 7, 1, 1, 5, 1, 0, false)
-	// Row 8: gap
-	// Row 9: chat (7 columns)
-	p.grid.AddItem(p.chat, 9, 0, 1, 7, 3, 50, false)
-	// Row 10: message (7 columns)
-	p.grid.AddItem(p.message, 10, 0, 1, 7, 1, 50, false)
+	// Row 8: chat (7 columns)
+	p.grid.AddItem(p.chat, 8, 0, 1, 7, 1, 50, false)
+	// Row 9: message (7 columns)
+	p.grid.AddItem(p.message, 9, 0, 1, 7, 1, 50, false)
 }
 
 func (p *gamePage) gameTitle() string {
