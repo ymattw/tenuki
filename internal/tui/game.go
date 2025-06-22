@@ -260,8 +260,8 @@ func (p *gamePage) gameTitle() string {
 	private := cond(p.game.Private, "🔒", "")
 	// Note '❶' != '⓿' + 1
 	handicap := rune(cond(p.game.Handicap > 0, '❶'+p.game.Handicap-1, '⓿'))
-	return fmt.Sprintf("%s %s %s %s, %c +%.1f, %s %s",
-		p.game.GameName, speed, shortRule, p.game.TimeControl, handicap, p.game.Komi, ranked, private)
+	return fmt.Sprintf("#%d %s %s %s %s, %c +%.1f, %s %s",
+		p.game.GameID, trimString(p.game.GameName, 30), speed, shortRule, p.game.TimeControl, handicap, p.game.Komi, ranked, private)
 }
 
 func (p *gamePage) Render(app *App) {
@@ -279,34 +279,40 @@ func (p *gamePage) Render(app *App) {
 
 	app.client.OnGameData(p.game.GameID, func(g *googs.Game) {
 		p.refreshGame(app)
-		app.redraw(nil)
+		app.redraw(func() { p.updateStatusAndHint(app) })
 	})
 
 	app.client.OnGamePhase(p.game.GameID, func(phase googs.GamePhase) {
 		p.refreshGame(app)
 		p.refreshGameState(app) // gameState has removal and outcome
-		app.redraw(nil)
+		app.redraw(func() { p.updateStatusAndHint(app) })
 	})
 
 	app.client.OnGameRemovedStones(p.game.GameID, func(r *googs.RemovedStones) {
 		p.refreshGame(app)
 		p.refreshGameState(app) // for dead stones drawing
-		app.redraw(nil)
+		app.redraw(func() { p.updateStatusAndHint(app) })
 	})
 
 	app.client.OnGameRemovedStonesAccepted(p.game.GameID, func(r *googs.RemovedStonesAccepted) {
-		// FIXME: update text for observe mode; also event seems missed
-		p.status.SetText("[red]" + cond(r.PlayerID == app.client.UserID, "You", "Opponent has") + " accepted stone removal[-]")
-		if r.Phase == googs.FinishedPhase {
-			p.refreshGame(app)      // For game result
-			p.refreshGameState(app) // for dead stones drawing
+		var who string
+		if p.game.IsMyGame(app.client.UserID) {
+			who = cond(r.PlayerID == app.client.UserID, "You have", "Opponent has")
+		} else {
+			who = cond(r.PlayerID == p.game.BlackPlayerID, "Black has", "White has")
 		}
-		app.redraw(nil)
+		app.redraw(func() {
+			p.status.SetText("[red]" + who + " accepted stone removal[-]")
+			if r.Phase == googs.FinishedPhase {
+				p.status.SetText("[green]" + r.Result() + "[-]")
+				p.hint.SetText(keyHints(nil))
+			}
+		})
 	})
 
 	app.client.OnMove(p.game.GameID, func(m *googs.GameMove) {
 		p.refreshGameState(app)
-		app.redraw(nil)
+		app.redraw(func() { p.updateStatusAndHint(app) })
 	})
 
 	app.client.OnClock(p.game.GameID, func(c *googs.Clock) {
@@ -354,7 +360,8 @@ func (p *gamePage) updatePlayer(t *tview.TextView, c googs.PlayerColor) bool {
 		fmt.Sprintf(" %s [::l]•[-] ", c),
 		fmt.Sprintf(" %s ", c))
 	clock := p.clock.ComputeClock(&p.game.TimeControl, c)
-	style := cond(clock.SuddenDeath, "[red]", "")
+	// FIXME: support more clock systems
+	style := cond(clock != nil && clock.SuddenDeath, "[red]", "")
 	player := cond(c == googs.PlayerBlack, p.game.BlackPlayer(), p.game.WhitePlayer())
 	text := fmt.Sprintf("\n%s\n\n%s%s[-]", player, style, clock)
 
