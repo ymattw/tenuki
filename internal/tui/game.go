@@ -317,12 +317,18 @@ func (p *gamePage) Render(app *App) {
 	app.client.OnGameChat(p.game.GameID, func(chat *googs.GameChat) {
 		p.chatsLock.Lock()
 		p.chats = insertSortedChats(p.chats, &chat.Line)
+		p.updateChatTable()
 		p.chatsLock.Unlock()
-		app.redraw(func() { p.updateChats() })
+		app.redraw(nil)
 	})
 }
 
 func insertSortedChats(lines []*googs.GameChatLine, newLine *googs.GameChatLine) []*googs.GameChatLine {
+	for _, line := range lines {
+		if line.ChatID == newLine.ChatID {
+			return lines // duplicate found, skip insert
+		}
+	}
 	index := sort.Search(len(lines), func(i int) bool {
 		return lines[i].Date.After(newLine.Date.Time)
 	})
@@ -390,7 +396,7 @@ func (p *gamePage) updateStatusAndHint(app *App) {
 	}
 }
 
-func (p *gamePage) updateChats() {
+func (p *gamePage) updateChatTable() {
 	// No mutex lock needed
 	chatCount := len(p.chats)
 	p.chat.Clear()
@@ -406,8 +412,10 @@ func (p *gamePage) updateChats() {
 		p.chat.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%d", line.MoveNumber)).SetTextColor(Styles.SecondaryTextColor).SetAlign(tview.AlignRight))
 		p.chat.SetCell(row, 2, tview.NewTableCell(player.String()).SetTextColor(Styles.TertiaryTextColor))
 		p.chat.SetCell(row, 3, tview.NewTableCell(strings.TrimSpace(line.Body)).SetTextColor(Styles.SecondaryTextColor))
-		p.chat.Select(row, 3)
-		p.chat.SetSelectedStyle(p.chat.GetCell(row, 3).Style.Foreground(Styles.PrimaryTextColor))
+	}
+	if chatCount > 0 {
+		p.chat.Select(chatCount-1, 3)
+		p.chat.SetSelectedStyle(p.chat.GetCell(chatCount-1, 3).Style.Foreground(Styles.PrimaryTextColor))
 	}
 }
 
