@@ -126,30 +126,29 @@ func newGamePage(app *App, gameID int64, returnPage string) Page {
 		SetFocusFunc(func() { p.chat.SetBorderColor(Styles.PrimaryTextColor) }).
 		SetBlurFunc(func() { p.chat.SetBorderColor(Styles.SecondaryTextColor) })
 
-	p.message.SetPlaceholder("Enter message ...").
-		SetPlaceholderTextColor(Styles.PrimaryTextColor).
+	p.message.
+		SetFieldBackgroundColor(Styles.PrimitiveBackgroundColor).
+		SetPlaceholder("> Enter message ...").
+		SetPlaceholderStyle(tcell.StyleDefault.Background(Styles.PrimitiveBackgroundColor)).
+		SetDoneFunc(func(key tcell.Key) {
+			if key == tcell.KeyEnter {
+				app.client.GameChat(p.gameID, p.gameState.MoveNumber, p.message.GetText())
+				p.message.SetText("")
+			}
+		}).
 		SetFocusFunc(func() {
 			app.redraw(func() {
-				p.message.
-					SetFieldBackgroundColor(Styles.PrimaryTextColor).
-					SetFieldTextColor(Styles.SecondaryTextColor).
+				p.message.SetFieldTextColor(Styles.PrimaryTextColor).
 					SetPlaceholder("")
 			})
 		},
 		).
 		SetBlurFunc(func() {
 			app.redraw(func() {
-				p.message.SetFieldBackgroundColor(Styles.SecondaryTextColor).
-					SetFieldTextColor(Styles.PrimaryTextColor).
-					SetPlaceholder("Enter message ...")
+				p.message.SetFieldTextColor(Styles.SecondaryTextColor).
+					SetPlaceholder("> Enter message ...")
 			})
 		})
-	p.message.SetDoneFunc(func(key tcell.Key) {
-		if key == tcell.KeyEnter {
-			app.client.GameChat(p.gameID, p.gameState.MoveNumber, p.message.GetText())
-			p.message.SetText("")
-		}
-	})
 
 	return p
 }

@@ -23,6 +23,7 @@ func newLoginPage(app *App, callback func()) Page {
 
 	p.status.SetDynamicColors(true)
 	p.form.
+		SetFieldBackgroundColor(Styles.SecondaryTextColor).
 		AddInputField("Username", "", 32, nil, nil).
 		AddPasswordField("Password", "", 32, '*', nil).
 		AddButton("Submit", func() {

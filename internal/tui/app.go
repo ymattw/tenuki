@@ -52,7 +52,9 @@ func NewApp(client *googs.Client) *App {
 func (app *App) addPage(name string, page Page) {
 	app.pages[name] = page
 	app.root.AddPage(name, page.Root(), true, false)
-	app.setupCommonKeys(page)
+	if name != "login" {
+		app.setupCommonKeys(page)
+	}
 }
 
 // This is expected to be called only once upon logged in
