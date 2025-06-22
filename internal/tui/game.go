@@ -117,7 +117,7 @@ func newGamePage(app *App, gameID int64, returnPage string) Page {
 		SetTextColor(Styles.SecondaryTextColor).
 		SetTextAlign(tview.AlignCenter)
 
-	p.chat.SetSelectable(true, false).
+	p.chat.SetSelectable(true, true).
 		SetBorder(true).
 		SetTitle(" Chat ").
 		SetTitleAlign(tview.AlignCenter).
@@ -316,10 +316,9 @@ func (p *gamePage) Render(app *App) {
 
 	app.client.OnGameChat(p.game.GameID, func(chat *googs.GameChat) {
 		p.chatsLock.Lock()
-		defer p.chatsLock.Unlock()
 		p.chats = insertSortedChats(p.chats, &chat.Line)
-		p.updateChats()
-		app.redraw(nil)
+		p.chatsLock.Unlock()
+		app.redraw(func() { p.updateChats() })
 	})
 }
 
@@ -394,12 +393,9 @@ func (p *gamePage) updateStatusAndHint(app *App) {
 func (p *gamePage) updateChats() {
 	// No mutex lock needed
 	chatCount := len(p.chats)
-	rowCount := p.chat.GetRowCount()
-	if chatCount <= rowCount {
-		return
-	}
+	p.chat.Clear()
 
-	for row := rowCount; row < chatCount; row++ {
+	for row := 0; row < chatCount; row++ {
 		line := p.chats[row]
 		player := &googs.Player{
 			Professional: line.Professional != 0,
@@ -410,7 +406,8 @@ func (p *gamePage) updateChats() {
 		p.chat.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%d", line.MoveNumber)).SetTextColor(Styles.SecondaryTextColor).SetAlign(tview.AlignRight))
 		p.chat.SetCell(row, 2, tview.NewTableCell(player.String()).SetTextColor(Styles.TertiaryTextColor))
 		p.chat.SetCell(row, 3, tview.NewTableCell(strings.TrimSpace(line.Body)).SetTextColor(Styles.SecondaryTextColor))
-		p.chat.Select(row, -1)
+		p.chat.Select(row, 3)
+		p.chat.SetSelectedStyle(p.chat.GetCell(row, 3).Style.Foreground(Styles.PrimaryTextColor))
 	}
 }
 
