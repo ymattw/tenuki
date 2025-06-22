@@ -95,24 +95,19 @@ func newGamePage(app *App, gameID int64, returnPage string) Page {
 	// bPlayer and wPlayer use secondary color to not conflict with
 	// highlighted widget in focus.
 	p.bPlayer.SetDynamicColors(true).
-		SetTextColor(Styles.SecondaryTextColor).
 		SetTextAlign(tview.AlignCenter).
-		SetTitleColor(Styles.SecondaryTextColor).
 		SetTitleAlign(tview.AlignCenter).
-		SetBorder(true).
-		SetBorderColor(Styles.SecondaryTextColor)
+		SetBorder(true)
 	p.wPlayer.SetDynamicColors(true).
-		SetTextColor(Styles.SecondaryTextColor).
 		SetTextAlign(tview.AlignCenter).
-		SetTitleColor(Styles.SecondaryTextColor).
 		SetTitleAlign(tview.AlignCenter).
-		SetBorder(true).
-		SetBorderColor(Styles.SecondaryTextColor)
+		SetBorder(true)
 	p.board.SetBorder(true).
 		SetFocusFunc(func() { p.board.SetBorderColor(Styles.PrimaryTextColor) }).
-		SetBlurFunc(func() { p.board.SetBorderColor(Styles.SecondaryTextColor) })
+		SetBlurFunc(func() { p.board.SetBorderColor(Styles.BorderColor) })
 	p.status.SetDynamicColors(true).
-		SetTextAlign(tview.AlignCenter)
+		SetTextAlign(tview.AlignCenter).
+		SetTextColor(Styles.TertiaryTextColor)
 	p.hint.SetDynamicColors(true).
 		SetTextColor(Styles.SecondaryTextColor).
 		SetTextAlign(tview.AlignCenter)
@@ -121,15 +116,12 @@ func newGamePage(app *App, gameID int64, returnPage string) Page {
 		SetBorder(true).
 		SetTitle(" Chat ").
 		SetTitleAlign(tview.AlignCenter).
-		SetTitleColor(Styles.SecondaryTextColor).
-		SetBorderColor(Styles.SecondaryTextColor).
 		SetFocusFunc(func() { p.chat.SetBorderColor(Styles.PrimaryTextColor) }).
-		SetBlurFunc(func() { p.chat.SetBorderColor(Styles.SecondaryTextColor) })
+		SetBlurFunc(func() { p.chat.SetBorderColor(Styles.BorderColor) })
 
 	p.message.
-		SetFieldBackgroundColor(Styles.PrimitiveBackgroundColor).
 		SetPlaceholder("> Enter message ...").
-		SetPlaceholderStyle(tcell.StyleDefault.Background(Styles.PrimitiveBackgroundColor)).
+		SetPlaceholderStyle(StyleDefault).
 		SetDoneFunc(func(key tcell.Key) {
 			if key == tcell.KeyEnter {
 				app.client.GameChat(p.gameID, p.gameState.MoveNumber, p.message.GetText())
@@ -415,14 +407,14 @@ func (p *gamePage) updateChatTable() {
 			Rank:         line.Ranking,
 			Username:     line.Username,
 		}
-		p.chat.SetCell(row, 0, tview.NewTableCell(line.Date.Format(time.DateTime)).SetTextColor(Styles.SecondaryTextColor))
-		p.chat.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%d", line.MoveNumber)).SetTextColor(Styles.SecondaryTextColor).SetAlign(tview.AlignRight))
+		p.chat.SetCell(row, 0, tview.NewTableCell(line.Date.Format(time.DateTime)))
+		p.chat.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%d", line.MoveNumber)).SetAlign(tview.AlignRight))
 		p.chat.SetCell(row, 2, tview.NewTableCell(player.String()).SetTextColor(Styles.TertiaryTextColor))
-		p.chat.SetCell(row, 3, tview.NewTableCell(strings.TrimSpace(line.Body)).SetTextColor(Styles.SecondaryTextColor))
+		p.chat.SetCell(row, 3, tview.NewTableCell(strings.TrimSpace(line.Body)))
 	}
 	if chatCount > 0 {
 		p.chat.Select(chatCount-1, 3)
-		p.chat.SetSelectedStyle(p.chat.GetCell(chatCount-1, 3).Style.Foreground(Styles.PrimaryTextColor))
+		p.chat.SetSelectedStyle(p.chat.GetCell(chatCount-1, 3).Style.Background(Styles.ContrastBackgroundColor))
 	}
 }
 

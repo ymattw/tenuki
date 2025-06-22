@@ -4,7 +4,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -15,7 +14,6 @@ func (app *App) popUp(message string, buttons []string, callbacks map[string]fun
 	modal := tview.NewModal().
 		SetText(message).
 		AddButtons(buttons).
-		SetButtonBackgroundColor(tcell.ColorDarkGray). // Make inactive button obvious
 		SetDoneFunc(func(_ int, label string) {
 			app.root.RemovePage(popupPage)
 			app.root.SwitchToPage(returnPage)

@@ -142,19 +142,19 @@ func (p *gamePage) drawBoard(screen tcell.Screen, x, y int) (int, int, int, int)
 	for c := 0; c < size; c++ {
 		// NOTE: 3-char offset for row numbers on the left, label runes
 		// are Full-width.
-		screen.SetContent(x+3+c*2, y, colLabel(c), nil, tcell.StyleDefault)
+		screen.SetContent(x+3+c*2, y, colLabel(c), nil, StyleDefault)
 	}
 
 	for row := 0; row < size; row++ {
 		// Left side coordinate label (19, 18, .., 1) and a space
 		left := fmt.Sprintf("%2d ", size-row)
 		for i, r := range left {
-			screen.SetContent(x+i, y+1+row, r, nil, tcell.StyleDefault)
+			screen.SetContent(x+i, y+1+row, r, nil, StyleDefault)
 		}
 
 		for col := 0; col < size; col++ {
 			cell := newCell(p.gameState, row, col)
-			style := tcell.StyleDefault.
+			style := StyleDefault.
 				Foreground(cell.foreground()).
 				Background(cell.background())
 			// Cursor use current shape in cell with reversed fg
@@ -169,7 +169,7 @@ func (p *gamePage) drawBoard(screen tcell.Screen, x, y int) (int, int, int, int)
 		// A space and right side coordinate label (19, 18, .., 1)
 		right := fmt.Sprintf(" %-2d", size-row)
 		for i, r := range right {
-			screen.SetContent(x+3+size*2+i, y+1+row, r, nil, tcell.StyleDefault)
+			screen.SetContent(x+3+size*2+i, y+1+row, r, nil, StyleDefault)
 		}
 	}
 
@@ -177,7 +177,7 @@ func (p *gamePage) drawBoard(screen tcell.Screen, x, y int) (int, int, int, int)
 	for c := 0; c < size; c++ {
 		// NOTE: 3-char offset for row numbers on the left, label runes
 		// are Full-width.
-		screen.SetContent(x+3+c*2, y+1+size, colLabel(c), nil, tcell.StyleDefault)
+		screen.SetContent(x+3+c*2, y+1+size, colLabel(c), nil, StyleDefault)
 	}
 	screen.Show()
 	return x, y, size*2 + 6, size + 2

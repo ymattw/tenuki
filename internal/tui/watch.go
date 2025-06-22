@@ -68,7 +68,8 @@ func newWatchPage(app *App) Page {
 		SetBorder(true).
 		SetTitleAlign(tview.AlignCenter)
 	p.status.SetDynamicColors(true).
-		SetTextAlign(tview.AlignCenter)
+		SetTextAlign(tview.AlignCenter).
+		SetTextColor(Styles.TertiaryTextColor)
 	p.hint.SetDynamicColors(true).
 		SetTextColor(Styles.SecondaryTextColor).
 		SetTextAlign(tview.AlignCenter).

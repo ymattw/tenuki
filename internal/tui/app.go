@@ -11,8 +11,6 @@ import (
 	"github.com/ymattw/googs"
 )
 
-var Styles = tview.Styles
-
 type App struct {
 	client *googs.Client
 	tui    *tview.Application
@@ -53,7 +51,7 @@ func NewApp(client *googs.Client) *App {
 		w, h := screen.Size()
 		if w < 70 || h < 30 {
 			msg := "Screen too small, make it at least 70x30."
-			tview.Print(screen, msg, 0, 0, len(msg), tview.AlignLeft, tcell.ColorRed)
+			tview.Print(screen, msg, 0, 0, len(msg), tview.AlignLeft, solarizedRed)
 			return true
 		}
 		return false
