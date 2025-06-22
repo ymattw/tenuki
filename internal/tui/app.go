@@ -46,6 +46,18 @@ func NewApp(client *googs.Client) *App {
 		pingTicker: time.NewTicker(10 * time.Second),
 		nextBoard:  make(map[int64]*googs.GameListEntry),
 	}
+
+	// Too small screen leads to tab switching focus to invisble
+	// primitives and cause app to hang.
+	app.tui.SetBeforeDrawFunc(func(screen tcell.Screen) bool {
+		w, h := screen.Size()
+		if w < 70 || h < 30 {
+			msg := "Screen too small, make it at least 70x30."
+			tview.Print(screen, msg, 0, 0, len(msg), tview.AlignLeft, tcell.ColorRed)
+			return true
+		}
+		return false
+	})
 	return app
 }
 
@@ -175,12 +187,14 @@ var commonKeyDescriptions = []string{"Home", "Next", "Watch", "quit"}
 
 // Set up common shortcuts. Page Root() must be a Grid.
 func (app *App) setupCommonKeys(p Page) {
-	// FIXME: Focus has problem when widget is out of visible area
 	tabIndex := 0
 
 	p.Root().(*tview.Grid).SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		focus := app.tui.GetFocus()
-		_, onInputField := focus.(*tview.InputField)
+		if len(p.Focusables()) == 0 {
+			return event
+		}
+
+		_, onInputField := app.tui.GetFocus().(*tview.InputField)
 
 		switch event.Key() {
 		case tcell.KeyESC:
