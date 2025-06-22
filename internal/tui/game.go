@@ -481,8 +481,7 @@ func (p *gamePage) setupKeys(app *App) {
 			}
 			return nil
 		} else if event.Key() == tcell.KeyEnter {
-			if myTurn {
-				// TODO: prevent illegal move
+			if myTurn && p.cursor.X != -1 && p.cursor.Y != -1 && p.gameState.Board[p.cursor.Y][p.cursor.X] == 0 {
 				app.client.GameMove(p.game.GameID, p.cursor.X, p.cursor.Y)
 				return nil
 			}
