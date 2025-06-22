@@ -6,64 +6,64 @@ import (
 	"github.com/rivo/tview"
 )
 
-type loginPage struct {
-	grid     *tview.Grid
-	form     *tview.Form
-	status   *tview.TextView
-	callback func()
-}
+func newLoginPage(app *App, callback func()) tview.Primitive {
+	status := tview.NewTextView().
+		SetDynamicColors(true).
+		SetTextAlign(tview.AlignCenter).
+		SetTextColor(Styles.MoreContrastBackgroundColor).
+		SetText("See your OGS \"Application\" or register one at\nhttps://online-go.com/oauth2/applications/")
 
-func newLoginPage(app *App, callback func()) Page {
-	p := &loginPage{
-		grid:     tview.NewGrid(),
-		form:     tview.NewForm(),
-		status:   tview.NewTextView(),
-		callback: callback,
-	}
+	cField := tview.NewInputField().
+		SetLabel("Client ID").
+		SetFieldWidth(42).
+		SetText(app.client.ClientID)
+	sField := tview.NewInputField().
+		SetLabel("Client Secret").
+		SetFieldWidth(42).
+		SetText(app.client.ClientSecret).
+		SetPlaceholder("Required for confidential client").
+		SetPlaceholderTextColor(Styles.MoreContrastBackgroundColor)
+	uField := tview.NewInputField().
+		SetLabel("Username").
+		SetFieldWidth(42)
+	pField := tview.NewInputField().
+		SetLabel("Password").
+		SetFieldWidth(42).
+		SetMaskCharacter('*')
 
-	p.status.SetDynamicColors(true)
-	p.form.
-		AddInputField("Username", "", 32, nil, nil).
-		AddPasswordField("Password", "", 32, '*', nil).
+	form := tview.NewForm().
+		AddFormItem(cField).
+		AddFormItem(sField).
+		AddFormItem(uField).
+		AddFormItem(pField)
+	form.SetButtonsAlign(tview.AlignCenter).
 		AddButton("Submit", func() {
-			username := p.form.GetFormItemByLabel("Username").(*tview.InputField).GetText()
-			password := p.form.GetFormItemByLabel("Password").(*tview.InputField).GetText()
-			if err := app.client.Login(username, password); err != nil {
-				p.status.SetText(fmt.Sprintf("[red]%v[-]", err))
-				p.form.GetFormItemByLabel("Password").(*tview.InputField).SetText("")
-				app.tui.SetFocus(p.form.GetFormItem(0))
+			app.client.ClientID = cField.GetText()
+			app.client.ClientSecret = sField.GetText()
+			if err := app.client.Login(uField.GetText(), pField.GetText()); err != nil {
+				status.SetText(fmt.Sprintf("[red]%v[-]", err))
+				app.tui.SetFocus(form.GetFormItemByLabel("Password"))
 			} else {
 				callback()
-				p.status.SetText("[green]Success, switching to home page ...")
+				status.SetText("[green]Success, switching to home page ...")
 			}
+		}).
+		AddButton("Quit", func() {
+			app.tui.Stop()
 		}).
 		SetTitle(" Login to OGS ").
 		SetBorder(true)
 
+	status.SetDynamicColors(true).
+		SetTextAlign(tview.AlignCenter).
+		SetTextColor(Styles.MoreContrastBackgroundColor).
+		SetText("See your OGS \"Application\" or register one at\nhttps://online-go.com/oauth2/applications/")
+
 	// Center align the form and bottom status in a 3x3 grid
-	p.grid.SetRows(0, 10, 0)
-	p.grid.SetColumns(0, 50, 0)
-	p.grid.AddItem(p.form, 1, 1, 1, 1, 0, 0, true)
-	p.grid.AddItem(p.status, 2, 1, 1, 1, 0, 0, false)
-	return p
-}
-
-func (p *loginPage) Root() tview.Primitive {
-	return p.grid
-}
-
-func (p *loginPage) Focusables() []tview.Primitive {
-	return []tview.Primitive{p.form}
-}
-
-func (p *loginPage) Refresh(app *App) error {
-	return nil
-}
-
-func (p *loginPage) Render(app *App) {
-	p.status.Clear()
-}
-
-func (p *loginPage) Leave(app *App) {
-	app.tui.Stop()
+	grid := tview.NewGrid().
+		SetRows(-1, 13, -1).
+		SetColumns(-1, 60, -1).
+		AddItem(form, 1, 1, 1, 1, 0, 0, true).
+		AddItem(status, 2, 1, 1, 1, 0, 0, false)
+	return grid
 }

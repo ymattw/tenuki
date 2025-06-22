@@ -56,15 +56,23 @@ func NewApp(client *googs.Client) *App {
 		}
 		return false
 	})
+
+	// Precreated pages which are not required to follow Page interface
+	app.root.AddPage("login", newLoginPage(app, func() {
+		// TODO: save to .local/state/
+		if err := app.client.Save("secret.json"); err != nil {
+			panic(err)
+		}
+		app.onLoggedIn()
+	}), true, false)
+
 	return app
 }
 
 func (app *App) addPage(name string, page Page) {
 	app.pages[name] = page
 	app.root.AddPage(name, page.Root(), true, false)
-	if name != "login" {
-		app.setupCommonKeys(page)
-	}
+	app.setupCommonKeys(page)
 }
 
 // This is expected to be called only once upon logged in
@@ -106,14 +114,7 @@ func (app *App) Run() error {
 	if app.client.LoggedIn() {
 		app.onLoggedIn()
 	} else {
-		app.addPage("login", newLoginPage(app, func() {
-			// TODO: save to .local/state/
-			if err := app.client.Save("secret.json"); err != nil {
-				panic(err)
-			}
-			app.onLoggedIn()
-		}))
-		app.switchToPage("login")
+		app.root.SwitchToPage("login")
 	}
 	app.tui.SetRoot(app.root, true)
 	return app.tui.Run()
