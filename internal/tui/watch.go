@@ -106,6 +106,7 @@ func (p *watchPage) Refresh(app *App) error {
 
 	resp, err := app.client.GameListQuery(googs.LiveGameList, 0, 20, nil, time.Second*10)
 	if err != nil {
+		app.error("Refresh watch page %v", err)
 		return err
 	}
 	p.gameList = resp

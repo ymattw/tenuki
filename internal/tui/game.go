@@ -273,23 +273,27 @@ func (p *gamePage) Render(app *App) {
 	})
 
 	app.client.OnGameData(p.game.GameID, func(g *googs.Game) {
+		app.info("Game %d data change", p.game.GameID)
 		p.refreshGame(app)
 		app.redraw(func() { p.updateStatusAndHint(app) })
 	})
 
 	app.client.OnGamePhase(p.game.GameID, func(phase googs.GamePhase) {
+		app.info("Game %d phase changed to %s", p.game.GameID, phase)
 		p.refreshGame(app)
 		p.refreshGameState(app) // gameState has removal and outcome
 		app.redraw(func() { p.updateStatusAndHint(app) })
 	})
 
 	app.client.OnGameRemovedStones(p.game.GameID, func(r *googs.RemovedStones) {
+		app.info("Game %d stone removal", p.game.GameID)
 		p.refreshGame(app)
 		p.refreshGameState(app) // for dead stones drawing
 		app.redraw(func() { p.updateStatusAndHint(app) })
 	})
 
 	app.client.OnGameRemovedStonesAccepted(p.game.GameID, func(r *googs.RemovedStonesAccepted) {
+		app.info("Game %d stone removal accepted by %d", p.game.GameID, r.PlayerID)
 		var who string
 		if p.game.IsMyGame(app.client.UserID) {
 			who = cond(r.PlayerID == app.client.UserID, "You have", "Opponent has")
@@ -306,16 +310,18 @@ func (p *gamePage) Render(app *App) {
 	})
 
 	app.client.OnMove(p.game.GameID, func(m *googs.GameMove) {
+		app.info("Game %d move %d %s ", p.game.GameID, m.MoveNumber, m.Move.OriginCoordinate)
 		p.refreshGameState(app)
 		app.redraw(func() { p.updateStatusAndHint(app) })
 	})
 
 	app.client.OnClock(p.game.GameID, func(c *googs.Clock) {
-		// DP("onClock: %s", formatObject(c))
+		// app.info("Game %d clock event, black time %#v, white time %#v", p.game.GameID, c.BlackTime, c.WhiteTime)
 		p.clock = c
 	})
 
 	app.client.OnGameChat(p.game.GameID, func(chat *googs.GameChat) {
+		app.info("Game %d chat line %v", p.game.GameID, chat.Line)
 		p.chatsLock.Lock()
 		p.chats = insertSortedChats(p.chats, &chat.Line)
 		p.updateChatTable()
@@ -342,6 +348,7 @@ func insertSortedChats(lines []*googs.GameChatLine, newLine *googs.GameChatLine)
 func (p *gamePage) refreshGame(app *App) error {
 	g, err := app.client.Game(p.gameID)
 	if err != nil {
+		app.error("Refresh game %v", err)
 		return err
 	}
 	p.game = g
@@ -410,7 +417,7 @@ func (p *gamePage) updateChatTable() {
 			Rank:         line.Ranking,
 			Username:     line.Username,
 		}
-		p.chat.SetCell(row, 0, tview.NewTableCell(line.Date.Format(time.DateTime)))
+		p.chat.SetCell(row, 0, tview.NewTableCell(line.Date.Format("Jan 2 15:04:05")))
 		p.chat.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%d", line.MoveNumber)).SetAlign(tview.AlignRight))
 		p.chat.SetCell(row, 2, tview.NewTableCell(player.String()).SetTextColor(Styles.TertiaryTextColor))
 		p.chat.SetCell(row, 3, tview.NewTableCell(strings.TrimSpace(line.Body)))
@@ -424,6 +431,7 @@ func (p *gamePage) updateChatTable() {
 func (p *gamePage) refreshGameState(app *App) error {
 	g, err := app.client.GameState(p.gameID)
 	if err != nil {
+		app.error("Refresh game state %v", err)
 		return err
 	}
 	p.gameState = g

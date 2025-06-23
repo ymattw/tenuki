@@ -15,6 +15,7 @@ type App struct {
 	client *googs.Client
 	tui    *tview.Application
 	root   *tview.Pages
+	logger *tview.TextView
 	pages  map[string]Page
 
 	// Connection measurement (milliseconds)
@@ -57,6 +58,9 @@ func NewApp(client *googs.Client) *App {
 		return false
 	})
 
+	app.initLogger()
+	app.info("App initialized")
+
 	// Precreated pages which are not required to follow Page interface
 	app.root.AddPage("login", newLoginPage(app, func() {
 		// TODO: save to .local/state/
@@ -79,10 +83,11 @@ func (app *App) addPage(name string, page Page) {
 func (app *App) onLoggedIn() {
 	app.client.NetPing(0, 0) // Initial ping
 	app.client.OnNetPong(func(drift, latency int64) {
+		app.info("Server pong drift=%d latency=%d", drift, latency)
 		app.drift, app.latency = drift, latency
 	})
 	app.client.OnActiveGame(func(g *googs.GameListEntry) {
-		// DP("active game update: %s", formatObject(g))
+		app.info("Active game update of #%d", g.ID)
 		delete(app.nextBoard, g.ID)
 		switch g.Phase {
 		case googs.FinishedPhase:
@@ -104,7 +109,6 @@ func (app *App) onLoggedIn() {
 		}
 	}()
 
-	// TODO: a debug modal window to show all important events
 	app.addPage("home", newHomePage(app))
 	app.addPage("watch", newWatchPage(app))
 	app.switchToPage("home")
@@ -117,6 +121,7 @@ func (app *App) Run() error {
 		app.root.SwitchToPage("login")
 	}
 	app.tui.SetRoot(app.root, true)
+	app.info("App started running")
 	return app.tui.Run()
 }
 
@@ -220,6 +225,9 @@ func (app *App) setupCommonKeys(p Page) {
 		}
 
 		switch event.Rune() {
+		case 'D':
+			app.showLogger()
+			return nil
 		case 'H':
 			app.switchToPage("home")
 			return nil

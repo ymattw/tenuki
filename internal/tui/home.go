@@ -106,6 +106,7 @@ func (p *homePage) Refresh(app *App) error {
 
 	ov, err := app.client.Overview()
 	if err != nil {
+		app.error("Refresh home page %v", err)
 		return err
 	}
 	p.overview = ov
