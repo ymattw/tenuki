@@ -40,18 +40,18 @@ func (app *App) hideLogger() {
 	app.root.RemovePage("logger")
 }
 
-func (app *App) log(format string, args ...any) {
+func (app *App) info(format string, args ...any) {
 	fmt.Fprintln(app.logger, fmt.Sprintf(time.Now().Format("0102 15:04:05")+" "+format, args...))
 }
 
-func (app *App) info(format string, args ...any) {
-	fmt.Fprintln(app.logger, fmt.Sprintf("I"+time.Now().Format("0102 15:04:05")+" "+format, args...))
-}
-
 func (app *App) warn(format string, args ...any) {
-	fmt.Fprintln(app.logger, fmt.Sprintf("[yellow]W"+time.Now().Format("0102 15:04:05")+"[-] "+format, args...))
+	fmt.Fprintln(app.logger, fmt.Sprintf("[orange]"+time.Now().Format("0102 15:04:05")+" "+format+"[-]", args...))
 }
 
 func (app *App) error(format string, args ...any) {
-	fmt.Fprintln(app.logger, fmt.Sprintf("[red]E"+time.Now().Format("0102 15:04:05")+" [-]"+format, args...))
+	fmt.Fprintln(app.logger, fmt.Sprintf("[red]"+time.Now().Format("0102 15:04:05")+" "+format+"[-]", args...))
+}
+
+func (app *App) debug(format string, args ...any) {
+	fmt.Fprintln(app.logger, fmt.Sprintf("[::d]"+time.Now().Format("0102 15:04:05")+" "+format+"[::-]", args...))
 }

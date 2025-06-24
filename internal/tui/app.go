@@ -83,7 +83,7 @@ func (app *App) addPage(name string, page Page) {
 func (app *App) onLoggedIn() {
 	app.client.NetPing(0, 0) // Initial ping
 	app.client.OnNetPong(func(drift, latency int64) {
-		app.info("Server pong drift=%d latency=%d", drift, latency)
+		// app.debug("Server pong drift=%d latency=%d", drift, latency)
 		app.drift, app.latency = drift, latency
 	})
 	app.client.OnActiveGame(func(g *googs.GameListEntry) {

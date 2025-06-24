@@ -36,11 +36,12 @@ func newHomePage(app *App) Page {
 
 	go func() {
 		for range p.ticker.C {
-			// Do not Refresh() here otherwise too many requests
 			newLabel := fmt.Sprintf("Next (%d)", len(app.nextBoard))
 			if newLabel != p.next.GetLabel() {
+				p.Refresh(app)
 				app.redraw(func() {
 					p.next.SetLabel(newLabel)
+					p.Render(app)
 				})
 			}
 		}
@@ -134,9 +135,9 @@ func (p *homePage) Render(app *App) {
 		p.games.SetCell(i+1, 0, tview.NewTableCell(fmt.Sprintf("%d", i+1)))
 		p.games.SetCell(i+1, 1, tview.NewTableCell(fmt.Sprintf("%3d", len(g.Moves))))
 		p.games.SetCell(i+1, 2, tview.NewTableCell(trimString(g.GameName, 30)))
-		private := cond(g.Private, "🔒", "")
 		handicap := cond(g.Handicap > 0, "🤏", "")
-		p.games.SetCell(i+1, 3, tview.NewTableCell(private+handicap))
+		private := cond(g.Private, "🔒", "")
+		p.games.SetCell(i+1, 3, tview.NewTableCell(handicap+private))
 		p.games.SetCell(i+1, 4, tview.NewTableCell(g.Opponent(app.client.UserID).String()))
 		turn := cond(g.Clock.CurrentPlayerID == g.Players.Black.ID, googs.PlayerBlack, googs.PlayerWhite)
 		p.games.SetCell(i+1, 5, tview.NewTableCell(g.Clock.ComputeClock(&g.TimeControl, turn).String()))

@@ -138,10 +138,10 @@ func (p *watchPage) Render(app *App) {
 	for i, g := range p.gameList.Results {
 		p.games.SetCell(i+1, 0, tview.NewTableCell(fmt.Sprintf("%3d", g.MoveNumber)))
 		p.games.SetCell(i+1, 1, tview.NewTableCell(trimString(g.Name, 30)))
+		handicap := cond(g.Handicap > 0, "🤏", "")
 		bot := cond(g.BotGame, "🤖", "")
 		private := cond(g.Private, "🔒", "")
-		handicap := cond(g.Handicap > 0, "🤏", "")
-		p.games.SetCell(i+1, 2, tview.NewTableCell(bot+private+handicap))
+		p.games.SetCell(i+1, 2, tview.NewTableCell(handicap+bot+private))
 		p.games.SetCell(i+1, 3, tview.NewTableCell(g.Black.String()))
 		p.games.SetCell(i+1, 4, tview.NewTableCell(g.White.String()))
 		p.games.SetCell(i+1, 5, tview.NewTableCell(fmt.Sprintf("%d", g.Handicap)))

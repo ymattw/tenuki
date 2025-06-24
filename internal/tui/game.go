@@ -242,7 +242,7 @@ func (p *gamePage) gameTitle() string {
 		"correspondence": "🐢",
 	}[p.game.TimeControl.Speed]
 
-	shortRule := map[string]string{
+	rule := map[string]string{
 		"aga":      "AGA",
 		"chinese":  "CN",
 		"ing":      "ING",
@@ -255,8 +255,8 @@ func (p *gamePage) gameTitle() string {
 	private := cond(p.game.Private, "🔒", "")
 	// Note '❶' != '⓿' + 1
 	handicap := rune(cond(p.game.Handicap > 0, '❶'+p.game.Handicap-1, '⓿'))
-	return fmt.Sprintf("#%d %s %s %s %s, %c +%.1f, %s %s",
-		p.game.GameID, trimString(p.game.GameName, 30), speed, shortRule, p.game.TimeControl, handicap, p.game.Komi, ranked, private)
+	return fmt.Sprintf("%s | %s %s %s | %c +%.1f | %s %s",
+		trimString(p.game.GameName, 30), speed, rule, p.game.TimeControl, handicap, p.game.Komi, ranked, private)
 }
 
 func (p *gamePage) Render(app *App) {
@@ -316,7 +316,7 @@ func (p *gamePage) Render(app *App) {
 	})
 
 	app.client.OnClock(p.game.GameID, func(c *googs.Clock) {
-		// app.info("Game %d clock event, black time %#v, white time %#v", p.game.GameID, c.BlackTime, c.WhiteTime)
+		// app.debug("Game %d clock event, black time %#v, white time %#v", p.game.GameID, c.BlackTime, c.WhiteTime)
 		p.clock = c
 	})
 
@@ -418,7 +418,7 @@ func (p *gamePage) updateChatTable() {
 			Username:     line.Username,
 		}
 		p.chat.SetCell(row, 0, tview.NewTableCell(line.Date.Format("Jan 2 15:04:05")))
-		p.chat.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%d", line.MoveNumber)).SetAlign(tview.AlignRight))
+		p.chat.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%d", line.MoveNumber)).SetTextColor(solarizedGreen).SetAlign(tview.AlignRight))
 		p.chat.SetCell(row, 2, tview.NewTableCell(player.String()).SetTextColor(Styles.TertiaryTextColor))
 		p.chat.SetCell(row, 3, tview.NewTableCell(strings.TrimSpace(line.Body)))
 	}
