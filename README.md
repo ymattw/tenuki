@@ -40,10 +40,21 @@ go run .
 
 Screenshots taken on macOS using iTerm2 with the Monaco font (size 14).
 
-![Home page showing game list](https://github.com/ymattw/tenuki/blob/main/screenshots/home.png?raw=true "Home page showing game list")
-![Watch page showing top live games](https://github.com/ymattw/tenuki/blob/main/screenshots/watch.png?raw=true "Watch page showing top live games")
-![Play mode with night board theme](https://github.com/ymattw/tenuki/blob/main/screenshots/play-night-theme.png?raw=true "Play mode with night board theme")
-![Play mode with oak board theme](https://github.com/ymattw/tenuki/blob/main/screenshots/play-oak-theme.png?raw=true "Play mode with oak board theme")
+*Play mode with default night board theme:*
+
+<img alt="Play mode with night board theme" src="https://github.com/ymattw/tenuki/blob/main/screenshots/play-night-theme.png?raw=true" width="500" />
+
+*Play mode with oak board theme:*
+
+<img alt="Play mode with oak board theme" src="https://github.com/ymattw/tenuki/blob/main/screenshots/play-oak-theme.png?raw=true" width="500" />
+
+*Home page showing your active games:*
+
+<img alt="Home page showing your active games" src="https://github.com/ymattw/tenuki/blob/main/screenshots/home.png?raw=true" width="500" />
+
+*Watch page showing top live games:*
+
+<img alt="Watch page showing top live games" src="https://github.com/ymattw/tenuki/blob/main/screenshots/watch.png?raw=true" width="500" />
 
 ## 🙏 Acknowledgments
 
