@@ -6,7 +6,7 @@ import (
 
 	"github.com/ymattw/googs"
 
-	"github.com/ymattw/gote/internal/tui"
+	"github.com/ymattw/tenuki/internal/tui"
 )
 
 func main() {

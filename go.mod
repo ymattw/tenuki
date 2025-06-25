@@ -1,4 +1,4 @@
-module github.com/ymattw/gote
+module github.com/ymattw/tenuki
 
 go 1.18
 
