@@ -6,7 +6,7 @@ require (
 	github.com/gdamore/tcell/v2 v2.7.1
 	github.com/rivo/tview v0.0.0-20250501113434-0c592cd31026
 	github.com/rivo/uniseg v0.4.7
-	github.com/ymattw/googs v0.0.0-20250607085339-98cf3b121664
+	github.com/ymattw/googs v0.0.0-20250624175142-eaaf6b10b2dd
 )
 
 require (
