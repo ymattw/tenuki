@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/rivo/tview"
 )
@@ -21,7 +22,7 @@ func newLoginPage(app *App, callback func()) tview.Primitive {
 		SetLabel("Client Secret").
 		SetFieldWidth(42).
 		SetText(app.client.ClientSecret).
-		SetPlaceholder("Required for confidential client").
+		SetPlaceholder("Keep empty for public client").
 		SetPlaceholderTextColor(Styles.MoreContrastBackgroundColor)
 	uField := tview.NewInputField().
 		SetLabel("Username").
@@ -40,6 +41,11 @@ func newLoginPage(app *App, callback func()) tview.Primitive {
 		AddButton("Submit", func() {
 			app.client.ClientID = cField.GetText()
 			app.client.ClientSecret = sField.GetText()
+			if strings.HasPrefix(app.client.ClientSecret, "pbkdf2_sha") {
+				status.SetText("[red]Client Secret looks to be hashed, try a different combination[-]")
+				app.tui.SetFocus(form.GetFormItemByLabel("Client Secret"))
+				return
+			}
 			if err := app.client.Login(uField.GetText(), pField.GetText()); err != nil {
 				status.SetText(fmt.Sprintf("[red]%v[-]", err))
 				app.tui.SetFocus(form.GetFormItemByLabel("Password"))
