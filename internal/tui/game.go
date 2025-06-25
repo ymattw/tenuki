@@ -31,9 +31,9 @@ type gamePage struct {
 	gameID     int64            // Orignal input
 	game       *googs.Game      // Loaded game
 	gameState  *googs.GameState // Loaded game state
+	clock      *googs.Clock
 	boardTheme string
 	cursor     *googs.OriginCoordinate
-	clock      *googs.Clock
 	ticker     *time.Ticker
 	chats      []*googs.GameChatLine
 	chatsLock  sync.Mutex
@@ -59,6 +59,7 @@ func newGamePage(app *App, gameID int64, returnPage string) Page {
 		gameID:     gameID,
 		game:       &googs.Game{},      // Avoid nil deference
 		gameState:  &googs.GameState{}, // Avoid nil deference
+		clock:      &googs.Clock{},     // avoid nil deference
 		boardTheme: "night",
 		cursor:     &googs.OriginCoordinate{},
 		ticker:     time.NewTicker(time.Second),
