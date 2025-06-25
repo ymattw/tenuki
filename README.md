@@ -24,11 +24,15 @@ limitations apply (for now):
 
 ### Requirements
 
-- Go **1.18+**
-- An [OGS OAuth2 Application](https://online-go.com/oauth2/applications/), with
-  `Authorization grant type` set to **Resource owner password-based**
 - A terminal that supports emoji rendering and a font with good Unicode
   coverage
+- Go **1.18+** ([Download and install](https://go.dev/doc/install))
+- An [OGS OAuth2 Application](https://online-go.com/oauth2/applications/), with
+  `Authorization grant type` set to **Resource owner password-based**
+
+  <kbd>
+    <img alt="Register a new application" src="https://github.com/ymattw/tenuki/blob/main/screenshots/register.png?raw=true"  />
+  </kbd>
 
 ### Run the app
 
