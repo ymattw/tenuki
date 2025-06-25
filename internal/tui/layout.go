@@ -1,7 +1,6 @@
 package tui
 
 import (
-	"sync"
 	"time"
 
 	"github.com/rivo/tview"
@@ -33,34 +32,15 @@ func (app *App) confirm(message string, callback func()) {
 
 func (app *App) loading(refresh func() error, render func()) {
 	pageName := "loading-page"
-	loadingShown := make(chan struct{})
 	done := make(chan struct{})
-	var once sync.Once
-
-	// Show loading modal after 500ms if not done yet
-	go func() {
-		timer := time.NewTimer(500 * time.Millisecond)
-		select {
-		case <-timer.C:
-			app.tui.QueueUpdateDraw(func() {
-				modal := tview.NewModal().SetText("Still refreshing data ...")
-				app.root.AddPage(pageName, modal, false, true)
-			})
-			once.Do(func() { close(loadingShown) })
-		case <-done:
-			timer.Stop()
-			once.Do(func() { close(loadingShown) })
-		}
-	}()
 
 	// Do background work
 	go func() {
 		err := refresh()
 		close(done)
-		<-loadingShown
+		app.root.RemovePage(pageName) // Safe to do even when not shown
 
-		app.tui.QueueUpdateDraw(func() {
-			app.root.RemovePage(pageName)
+		app.redraw(func() {
 			if err != nil {
 				app.popUp("[red]"+err.Error(), []string{"OK"}, nil)
 			} else {
@@ -68,4 +48,16 @@ func (app *App) loading(refresh func() error, render func()) {
 			}
 		})
 	}()
+
+	// Show loading modal after 500ms if not done yet
+	timer := time.NewTimer(500 * time.Millisecond)
+	select {
+	case <-timer.C:
+		app.redraw(func() {
+			modal := tview.NewModal().SetText("Still refreshing data ...")
+			app.root.AddPage(pageName, modal, false, true)
+		})
+	case <-done:
+		timer.Stop()
+	}
 }

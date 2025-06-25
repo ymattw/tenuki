@@ -136,11 +136,13 @@ func (app *App) redraw(fn func()) {
 func (app *App) switchToPage(name string) {
 	app.loading(
 		func() error {
+			// Show target page now, instead of the last visible
+			// one while refrshing data
+			app.root.SwitchToPage(name)
 			return app.pages[name].Refresh(app)
 		},
 		func() {
 			app.pages[name].Render(app)
-			app.root.SwitchToPage(name)
 			if len(app.pages[name].Focusables()) > 0 {
 				app.tui.SetFocus(app.pages[name].Focusables()[0])
 			}
