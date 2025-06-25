@@ -234,14 +234,15 @@ func (app *App) setupCommonKeys(p Page) {
 			app.switchToPage("home")
 			return nil
 		case 'N':
-			curPage, _ := app.root.GetFrontPage()
-			if _, err := strconv.ParseInt(curPage, 10, 64); err == nil {
-				// Dynamic game page, leave (to "home") first
-				p.Leave(app)
-			}
-			// If no next, this actually stays at "home" (desired)
 			if g := app.nextGameEntry(); g != nil {
+				curPage, _ := app.root.GetFrontPage()
+				if _, err := strconv.ParseInt(curPage, 10, 64); err == nil {
+					// Dynamic game page, clean it up
+					p.Leave(app)
+				}
 				app.switchToNewGamePage(g.ID, "")
+			} else {
+				app.switchToPage("home")
 			}
 			return nil
 		case 'W':
