@@ -57,7 +57,7 @@ func newLoginPage(app *App, callback func()) tview.Primitive {
 	status.SetDynamicColors(true).
 		SetTextAlign(tview.AlignCenter).
 		SetTextColor(Styles.MoreContrastBackgroundColor).
-		SetText("See your OGS \"Application\" or register one at\nhttps://online-go.com/oauth2/applications/")
+		SetText("See your OGS OAuth2 Application or register one at\nhttps://online-go.com/oauth2/applications/")
 
 	// Center align the form and bottom status in a 3x3 grid
 	grid := tview.NewGrid().

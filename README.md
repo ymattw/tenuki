@@ -25,8 +25,8 @@ limitations apply (for now):
 ### Requirements
 
 - Go **1.18+**
-- An [OGS application](https://online-go.com/oauth2/applications/), with
-  `Authorization grant type` set to *Resource owner password-based*
+- An [OGS OAuth2 Application](https://online-go.com/oauth2/applications/), with
+  `Authorization grant type` set to **Resource owner password-based**
 - A terminal that supports emoji rendering and a font with good Unicode
   coverage
 
