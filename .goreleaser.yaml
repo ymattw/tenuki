@@ -1,0 +1,21 @@
+project_name: tenuki
+
+builds:
+  - main: .
+    goos: [linux, windows, darwin]
+    goarch: [amd64]
+    ldflags:
+      - -s -w
+      - -X main.buildVersion={{ .Version }}
+      - -X main.buildDate={{ .Date }}
+      - -X main.buildCommit={{ .Commit }}
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: "checksums.txt"
