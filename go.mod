@@ -3,6 +3,7 @@ module github.com/ymattw/tenuki
 go 1.18
 
 require (
+	github.com/adrg/xdg v0.5.3
 	github.com/gdamore/tcell/v2 v2.7.1
 	github.com/rivo/tview v0.0.0-20250501113434-0c592cd31026
 	github.com/rivo/uniseg v0.4.7
@@ -15,7 +16,7 @@ require (
 	github.com/graarh/golang-socketio v0.0.0-20170510162725-2c44953b9b5f // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
-	golang.org/x/sys v0.17.0 // indirect
+	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/term v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 )

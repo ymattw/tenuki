@@ -9,6 +9,8 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/ymattw/googs"
+
+	"github.com/ymattw/tenuki/internal/config"
 )
 
 type App struct {
@@ -63,8 +65,7 @@ func NewApp(client *googs.Client) *App {
 
 	// Precreated pages which are not required to follow Page interface
 	app.root.AddPage("login", newLoginPage(app, func() {
-		// TODO: save to .local/state/
-		if err := app.client.Save("secret.json"); err != nil {
+		if err := app.client.Save(config.SecretPath(app.client.Username)); err != nil {
 			panic(err)
 		}
 		app.onLoggedIn()
