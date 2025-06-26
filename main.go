@@ -3,7 +3,9 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/ymattw/googs"
 
@@ -12,11 +14,23 @@ import (
 )
 
 var (
-	username = flag.String("u", "", "OGS username, only needed when you have multiple users logged in before")
+	showVersion = flag.Bool("V", false, "Print version and exit")
+	username    = flag.String("u", "", "OGS username, only needed for switching accounts")
+
+	// To be set by compiler via -ldflags
+	buildVersion string
+	buildDate    string
+	buildCommit  string
 )
 
 func main() {
 	flag.Parse()
+	if *showVersion {
+		fmt.Printf("Tenuki version: %s\nbuilt on: %s\ncommit: %s\n",
+			buildVersion, buildDate, buildCommit)
+		os.Exit(0)
+	}
+
 	config.MigrateSecret()
 
 	client, err := loadClient()
