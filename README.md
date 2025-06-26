@@ -5,13 +5,13 @@ client built with Go and the [tview](https://github.com/rivo/tview) UI library.
 It lets you escape the browser and enjoy your correspondence games right from
 your favorite terminal.
 
-## ✨ Features
+## Features
 
 - List your active games
 - Play and chat
 - Watch top live games
 
-## ⚠️ Limitations
+## Limitations
 
 Tenuki is designed primarily for **correspondence games**. The following
 limitations apply (for now):
@@ -20,7 +20,7 @@ limitations apply (for now):
 - No auto match functionality
 - Only the **byo-yomi** clock system is fully supported
 
-## 🚀 Usage
+## Usage
 
 ### Requirements
 
@@ -37,10 +37,11 @@ limitations apply (for now):
 ### Run the app
 
 ```bash
+go run . -help
 go run .
 ```
 
-## 📸 Screenshots
+## Screenshots
 
 Screenshots taken on macOS using iTerm2 with the Monaco font (size 14).
 
@@ -60,7 +61,7 @@ Screenshots taken on macOS using iTerm2 with the Monaco font (size 14).
 
 <img alt="Watch page showing top live games" src="https://github.com/ymattw/tenuki/blob/main/screenshots/watch.png?raw=true" width="500" />
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 This project is inspired by and a spiritual successor to
 [termsuji](https://github.com/lvank/termsuji), with OGS library decoupled to
