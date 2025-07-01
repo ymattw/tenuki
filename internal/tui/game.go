@@ -363,7 +363,6 @@ func (p *gamePage) updatePlayer(t *tview.TextView, c googs.PlayerColor) bool {
 		fmt.Sprintf(" %s [::l]•[-] ", c),
 		fmt.Sprintf(" %s ", c))
 	clock := p.clock.ComputeClock(&p.game.TimeControl, c)
-	// FIXME: support more clock systems
 	style := cond(clock != nil && clock.SuddenDeath, "[red]", "")
 	player := cond(c == googs.PlayerBlack, p.game.BlackPlayer(), p.game.WhitePlayer())
 	text := fmt.Sprintf("\n%s\n\n%s%s[-]", player, style, clock)
@@ -382,7 +381,7 @@ func (p *gamePage) updatePlayers() bool {
 	}
 	b := p.updatePlayer(p.bPlayer, googs.PlayerBlack)
 	w := p.updatePlayer(p.wPlayer, googs.PlayerWhite)
-	return b && w
+	return b || w
 }
 
 func (p *gamePage) updateStatusAndHint(app *App) {
