@@ -239,7 +239,7 @@ func (p *gamePage) gameTitle() string {
 	speed := map[string]string{
 		"blitz":          "⚡",
 		"rapid":          "⏩",
-		"live":           "⏱️",
+		"live":           "🕐",
 		"correspondence": "🐢",
 	}[p.game.TimeControl.Speed]
 
@@ -254,9 +254,8 @@ func (p *gamePage) gameTitle() string {
 
 	ranked := cond(p.game.Ranked, "ranked", "unranked")
 	private := cond(p.game.Private, "🔒", "")
-	// Note '❶' != '⓿' + 1
-	handicap := rune(cond(p.game.Handicap > 0, '❶'+p.game.Handicap-1, '⓿'))
-	return fmt.Sprintf("%s | %s %s %s | %c +%.1f | %s %s",
+	handicap := circledNumber(p.game.Handicap)
+	return fmt.Sprintf("%s | %s %s %s | %s +%.1f | %s %s",
 		trimString(p.game.GameName, 30), speed, rule, p.game.TimeControl, handicap, p.game.Komi, ranked, private)
 }
 
