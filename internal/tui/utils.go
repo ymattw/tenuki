@@ -50,3 +50,20 @@ func keyHints(descs []string) string {
 	}
 	return strings.Join(hints, " ⋅ ")
 }
+
+// Note only 1-20 and 21-35, 36-50 are continuous respectively.
+func circledNumber(n int) string {
+	if n > 50 {
+		return fmt.Sprintf("(%d)", n)
+	}
+	if n >= 36 {
+		return string(rune('㊱' + n - 36))
+	}
+	if n >= 21 {
+		return string(rune('㉑' + n - 21))
+	}
+	if n >= 1 {
+		return string(rune('①' + n - 1))
+	}
+	return "⓪"
+}
