@@ -18,7 +18,6 @@ limitations apply (for now):
 
 - No support for creating or accepting challenges
 - No auto match functionality
-- Only the **byo-yomi** clock system is fully supported
 
 ## Usage
 
