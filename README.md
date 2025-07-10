@@ -25,7 +25,6 @@ limitations apply (for now):
 
 - A terminal that supports emoji rendering and a font with good Unicode
   coverage
-- Go **1.18+** ([Download and install](https://go.dev/doc/install))
 - An [OGS OAuth2 Application](https://online-go.com/oauth2/applications/), with
   `Authorization grant type` set to **Resource owner password-based**
 
@@ -34,6 +33,22 @@ limitations apply (for now):
   </kbd>
 
 ### Run the app
+
+#### Run from binary
+
+Download the binary from [Release](https://github.com/ymattw/tenuki/releases)
+that are built from automated GitHub Actions, decompress, and run from your
+terminal.
+
+```bash
+./tenuki -help
+./tenuki
+```
+
+#### Run from source
+
+Requires Go **1.18+** ([Download and install](https://go.dev/doc/install)).
+Clone the code, enter the directory and then:
 
 ```bash
 go run . -help
