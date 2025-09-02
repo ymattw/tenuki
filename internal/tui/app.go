@@ -65,7 +65,13 @@ func NewApp(client *googs.Client) *App {
 
 	// Precreated pages which are not required to follow Page interface
 	app.root.AddPage("login", newLoginPage(app, func() {
-		if err := app.client.Save(config.SecretPath(app.client.Username)); err != nil {
+		
+		path := config.SecretPath(app.client.Username)
+		// Create directories to path or the initial save will fail on linux
+		if err := os.MkdirAll(filepath.Dir(path), 0770); err != nil {
+			panic(err)
+		}
+		if err := app.client.Save(path); err != nil {
 			panic(err)
 		}
 		app.onLoggedIn()
