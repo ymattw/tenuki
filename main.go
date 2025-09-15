@@ -31,8 +31,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	config.MigrateSecret()
-
 	client, err := loadClient()
 	if err != nil {
 		log.Fatal(err)
