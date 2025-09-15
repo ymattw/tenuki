@@ -2,6 +2,8 @@ package tui
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"time"
@@ -65,7 +67,6 @@ func NewApp(client *googs.Client) *App {
 
 	// Precreated pages which are not required to follow Page interface
 	app.root.AddPage("login", newLoginPage(app, func() {
-		
 		path := config.SecretPath(app.client.Username)
 		// Create directories to path or the initial save will fail on linux
 		if err := os.MkdirAll(filepath.Dir(path), 0770); err != nil {
