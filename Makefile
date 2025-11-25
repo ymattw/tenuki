@@ -13,6 +13,7 @@ build:
 	go build -o tenuki -ldflags="$(LDFLAGS)" .
 
 mod:
+	go get -u github.com/ymattw/googs
 	go mod tidy
 
 release:
